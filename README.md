@@ -1,6 +1,6 @@
 # SM18_2_Anki
 
-功能: SuperMemo `NodeAsText.txt` → Anki `.apkg`，保留 FSRS 调度数据和完整复习历史。
+功能: SuperMemo `NodeAsText.txt` → Anki `.apkg`，将所有 memorized的item导出到anki,保留 FSRS 调度数据和完整复习历史。
 
 将目录下的`sm18_fix.exe`(作用是确保导出内容不会乱码)复制到你的sm18目录下打开, 导出source code, 窗口`Select text export options:`中, 勾选全部三个选项, 导出得到`NodeAsText.txt` .
 
