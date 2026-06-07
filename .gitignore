@@ -1,5 +1,4 @@
 NodeAsText.txt
-output/
 __pycache__/
 *.pyc
 .venv/
