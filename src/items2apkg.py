@@ -304,10 +304,16 @@ def build_media_entries(media_files):
 # ═══════════════════════════════════════════════════════════
 
 def ncr_to_unicode(html):
-    """Convert decimal NCR like &#38382; to Unicode characters. Filter surrogates."""
-    html = re.sub(r'&#(\d+);', lambda m: chr(int(m.group(1))), html)
-    # Remove surrogate characters (U+D800-U+DFFF), invalid in UTF-8
-    return re.sub(r'[\ud800-\udfff]', '�', html)
+    """Convert decimal & hex NCR to Unicode. Keep ASCII entities as NCR."""
+    def _convert(cp, orig):
+        if cp < 128 or 0xD800 <= cp <= 0xDFFF:
+            return orig  # keep as NCR
+        return chr(cp)
+    html = re.sub(r'&#[xX]([0-9a-fA-F]+);',
+                  lambda m: _convert(int(m.group(1), 16), m.group(0)), html)
+    html = re.sub(r'&#(\d+);',
+                  lambda m: _convert(int(m.group(1)), m.group(0)), html)
+    return re.sub(r'[\ud800-\udfff]', '', html)
 
 
 def read_content(source):
