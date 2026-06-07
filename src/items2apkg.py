@@ -304,15 +304,21 @@ def build_media_entries(media_files):
 # ═══════════════════════════════════════════════════════════
 
 def ncr_to_unicode(html):
-    """Convert decimal & hex NCR to Unicode. Keep &#60;(<) &#38;(&) and surrogates."""
-    def _convert(cp, orig):
-        if cp in (38, 60) or 0xD800 <= cp <= 0xDFFF:
-            return orig
-        return chr(cp)
-    html = re.sub(r'&#[xX]([0-9a-fA-F]+);',
-                  lambda m: _convert(int(m.group(1), 16), m.group(0)), html)
-    html = re.sub(r'&#(\d+);',
-                  lambda m: _convert(int(m.group(1)), m.group(0)), html)
+    """Convert NCR to Unicode. < > & → named entities, others → Unicode, strip surrogates."""
+    # Standard HTML named entities
+    for dec, hex_, entity in [(60, '3c', '&lt;'), (62, '3e', '&gt;'), (38, '26', '&amp;')]:
+        html = re.sub(r'&#' + str(dec) + ';', entity, html)
+        html = re.sub(r'&#[xX]' + hex_ + ';', entity, html)
+    # Hex NCR → Unicode (skip surrogates)
+    def _hex(m):
+        cp = int(m.group(1), 16)
+        return m.group(0) if 0xD800 <= cp <= 0xDFFF else chr(cp)
+    html = re.sub(r'&#[xX]([0-9a-fA-F]+);', _hex, html)
+    # Decimal NCR → Unicode (skip surrogates)
+    def _dec(m):
+        cp = int(m.group(1))
+        return m.group(0) if 0xD800 <= cp <= 0xDFFF else chr(cp)
+    html = re.sub(r'&#(\d+);', _dec, html)
     return re.sub(r'[\ud800-\udfff]', '', html)
 
 
