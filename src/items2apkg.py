@@ -304,10 +304,10 @@ def build_media_entries(media_files):
 # ═══════════════════════════════════════════════════════════
 
 def ncr_to_unicode(html):
-    """Convert decimal & hex NCR to Unicode. Keep ASCII entities as NCR."""
+    """Convert decimal & hex NCR to Unicode. Keep &#60;(<) &#38;(&) and surrogates."""
     def _convert(cp, orig):
-        if cp < 128 or 0xD800 <= cp <= 0xDFFF:
-            return orig  # keep as NCR
+        if cp in (38, 60) or 0xD800 <= cp <= 0xDFFF:
+            return orig
         return chr(cp)
     html = re.sub(r'&#[xX]([0-9a-fA-F]+);',
                   lambda m: _convert(int(m.group(1), 16), m.group(0)), html)
