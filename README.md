@@ -84,7 +84,7 @@ NodeAsText.txt (9 MB)
 
 - `file:///` → 嵌入 apkg
 - `http(s)://` → 下载后嵌入
-- `127.0.0.1:50555/formula?latex=...` → `\(...\)` 内联
+- `<img src=127.0.0.1:50555/formula?latex=...>` → `\(...\)` 内联
   - 这是针对我个人supermemo数据的处理
 
 

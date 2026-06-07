@@ -303,6 +303,13 @@ def build_media_entries(media_files):
 # Image Handling
 # ═══════════════════════════════════════════════════════════
 
+def ncr_to_unicode(html):
+    """Convert decimal NCR like &#38382; to Unicode characters. Filter surrogates."""
+    html = re.sub(r'&#(\d+);', lambda m: chr(int(m.group(1))), html)
+    # Remove surrogate characters (U+D800-U+DFFF), invalid in UTF-8
+    return re.sub(r'[\ud800-\udfff]', '�', html)
+
+
 def read_content(source):
     if source is None: return None
     s = source.strip()
@@ -310,10 +317,10 @@ def read_content(source):
     if s[1:3] == ':\\' or s.startswith('/') or ('elements' in s and '.HTM' in s.upper()):
         try:
             with open(s, 'r', encoding='utf-8', errors='replace') as f:
-                return f.read()
+                return ncr_to_unicode(f.read())
         except Exception:
             return '(error: {})'.format(os.path.basename(s))
-    return s
+    return ncr_to_unicode(s)
 
 
 class ImageCollector:
